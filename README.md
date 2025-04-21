@@ -1,5 +1,5 @@
-# FSO-Phonebook-backend
-Link to the deployed Phonebook-backend application - https://fso-phonebook-backend-i5kj.onrender.com/
+# FSO-Phonebook
+Link to the deployed Phonebook application - https://fso-phonebook-backend-i5kj.onrender.com/
 
 # API Endpoints
     GET /info
