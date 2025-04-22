@@ -8,10 +8,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const url = process.env.MONGODB_URI;
 
-console.log('Connecting to MongoDB at:', url);
+// console.log('Connecting to MongoDB at:', url);
 
 // Middleware setup
-app.use(cors({ origin: 'https://fso-phonebook-database-7jdl.onrender.com' })); // Allow requests from Netlify frontend
+app.use(cors({ origin: 'https://fso-phonebook-database-7jdl.onrender.com' }));
 app.use(express.json()); // Parse JSON bodies
 app.use(morgan('tiny')); // Logging middleware
 
