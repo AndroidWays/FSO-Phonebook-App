@@ -3,19 +3,17 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const url = process.env.MONGODB_URI;
 
-// console.log('Connecting to MongoDB at:', url);
-
-// Middleware setup
 app.use(cors({ origin: 'https://fso-phonebook-database-7jdl.onrender.com' }));
-app.use(express.json()); // Parse JSON bodies
-app.use(morgan('tiny')); // Logging middleware
+app.use(express.json());
+app.use(morgan('tiny'));
+app.use(express.static('dist'));
 
-// MongoDB connection
 mongoose
     .connect(url)
     .then(() => {
@@ -25,7 +23,6 @@ mongoose
         console.error('Error connecting to MongoDB:', error.message);
     });
 
-// Schema and Model for Person
 const personSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -37,7 +34,6 @@ const personSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: (value) => {
-                // Validate phone number format
                 return /^\d{2,3}-\d{5,}$/.test(value);
             },
             message: (props) =>
@@ -56,7 +52,6 @@ personSchema.set('toJSON', {
 
 const Person = mongoose.model('Person', personSchema);
 
-// Routes
 app.get('/api/persons', (req, res, next) => {
     Person.find({})
         .then((persons) => res.json(persons))
@@ -92,7 +87,6 @@ app.post('/api/persons', (req, res, next) => {
 
 app.put('/api/persons/:id', (req, res, next) => {
     const { name, number } = req.body;
-
     const opts = { runValidators: true, new: true };
 
     Person.findByIdAndUpdate(req.params.id, { name, number }, opts)
@@ -118,12 +112,14 @@ app.delete('/api/persons/:id', (req, res, next) => {
         .catch((error) => next(error));
 });
 
-// Unknown endpoint middleware
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+});
+
 app.use((req, res) => {
     res.status(404).send({ error: 'Unknown endpoint' });
 });
 
-// Error handling middleware
 app.use((error, req, res, next) => {
     console.error(error.message);
 
@@ -136,7 +132,6 @@ app.use((error, req, res, next) => {
     next(error);
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
